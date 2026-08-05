@@ -1,0 +1,17 @@
+{
+  "name": "greenm-plugins",
+  "owner": {
+    "name": "GreenM",
+    "email": "osierikov@greenm.io"
+  },
+  "plugins": [
+    {
+      "name": "greenm-webflow-publish",
+      "source": "./greenm-webflow-publish",
+      "description": "End-to-end Webflow publishing for GreenM — blog posts and case studies. Krea image generation, Data API asset upload, staging→prod, validation.",
+      "author": "Sierikov <osierikov@greenm.io>",
+      "category": "Publishing",
+      "tags": ["webflow", "cms", "publishing", "aeo", "case-study", "blog"]
+    }
+  ]
+}
