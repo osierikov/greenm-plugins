@@ -13,11 +13,27 @@ submitted_body = the_html_you_submitted
 
 # Critical element counts must match
 discrepancies = []
-for tag in ['<a ', '<ul>', '<ol>', '<hr', '<li>']:
+for tag in ['<a ', '<ul>', '<ol>', '<hr', '<li>', '<div class="w-embed"']:
     submitted = submitted_body.count(tag)
     stored = stored_body.count(tag)
     if submitted != stored:
         discrepancies.append(f"{tag}: submitted={submitted}, stored={stored}")
+
+# Extra: if body had any tables, they MUST be inside embeds
+table_count = submitted_body.count('<table>')
+embed_count = submitted_body.count('<div class="w-embed"')
+if table_count > embed_count:
+    discrepancies.append(f"tables outside embed: {table_count - embed_count} bare <table> — Webflow will strip them. Re-run Step 4.6 (transform_tables).")
+
+# Extra: every body <img> must be inside an embed for full-width proportional display
+import re
+bare_img = 0
+for m in re.finditer(r'<img\s', submitted_body):
+    left = submitted_body[max(0, m.start()-40):m.start()]
+    if 'class="w-embed"' not in left:
+        bare_img += 1
+if bare_img > 0:
+    discrepancies.append(f"body images outside embed: {bare_img} bare <img> — will render at natural size with side margins. Re-run Step 4.7 (transform_body_images).")
 
 if discrepancies:
     print("WEBFLOW SANITIZATION DETECTED:")

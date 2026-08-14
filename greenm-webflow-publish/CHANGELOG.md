@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.7.0 — 2026-08-14
+
+**Merged the content-20-test webflow-publish snapshot back into the production plugin.** The test bundle was created 2026-08-13 to validate two Rich Text embed rules (tables and body images) against a real post. Both proved out — the rules move into production here.
+
+### Added
+
+- New Step 4.6 in the workflow — `transform_tables(html)` wraps every markdown-converted `<table>` in a self-contained `w-embed` block with inline dark-theme + teal-accented styling. Fixes the flat-text rendering that appeared on the CQC vendor-hosted-vs-private-deployment post and on the Pilot-to-Production comparison table.
+- New Step 4.7 in the workflow — `transform_body_images(html)` wraps every body `<img>` in a `w-embed` block with inline `width:100%; height:auto; display:block; border-radius:8px; margin:32px 0;`. Diagrams and schemas now span the full content column instead of appearing as small centered islands.
+- New reference: `references/embed-blocks.md` — the escape hatch documentation. §1 tables, §2 body images, §3 CTA callouts, §4 what NOT to embed, §5 how to add future embed templates. All templates are single-line and self-contained (styles inline).
+- Post-CMS-write sanitization check (`validation-checklist.md`) now counts `<div class="w-embed"` alongside `<a>`, `<ul>`, `<ol>`, `<hr>`, `<li>`, and reports bare `<table>` / bare `<img>` as discrepancies with a pointer to re-run the missing Step 4.6/4.7.
+- SKILL.md Step 4 verify-output checklist now includes the zero-bare-`<table>` and every-`<img>`-in-embed assertions.
+
+### Changed
+
+- `references/markdown-conversion.md` — corrected the false "Webflow Rich Text DOES support tables" claim (removed in favor of the correct sanitization behavior). The `Images inside body` section now specifies the full-width wrap rule.
+- No changes to case-study-publish, image-generation Krea flow, Data API asset upload, or staging→prod validation — those v0.6.x behaviors are preserved untouched.
+
+### Why merge now
+
+The test bundle (content-20-test) served its purpose — the two embed rules ran on real posts, caught the bugs they were designed to catch, and produced correct rendering. Keeping the fixes in a parallel test folder makes the marketplace confusing (two skills with the same name) and risks the production plugin drifting behind. Merge here removes both risks.
+
+### Ships alongside
+
+The `aeo-content` skill (workspace provisioning + concept rationale + Track-1/Track-2 image split) has been extracted from the test bundle into its own top-level plugin folder (`aeo-content/`) in this marketplace. It's a content-authoring skill, not a publishing skill, so it belongs beside `greenm-webflow-publish` as a peer rather than inside it.
+
 ## 0.6.3 — 2026-08-05
 
 Image upload now goes through the Data API (`data_assets_tool.create_asset`) — no Designer required. Validated on the ROC Clinic AI staging run.

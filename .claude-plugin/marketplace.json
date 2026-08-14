@@ -6,20 +6,20 @@
   },
   "plugins": [
     {
+      "name": "aeo-content",
+      "source": "./aeo-content",
+      "description": "GreenM AEO content authoring — 8-stage workflow with Stage 2.5 workspace provisioning (drafts folder + Linear ticket pair assigned to initiator), channel- and voice-aware output, Track-1/Track-2 image split with mandatory concept rationale and Featured/OG legibility gates. Pairs with greenm-webflow-publish to cover the full pipeline from topic to live post.",
+      "author": "Sierikov <osierikov@greenm.io>",
+      "category": "Content",
+      "tags": ["aeo", "content", "authoring", "writing", "greenm"]
+    },
+    {
       "name": "greenm-webflow-publish",
       "source": "./greenm-webflow-publish",
-      "description": "End-to-end Webflow publishing for GreenM — blog posts and case studies. Krea image generation, Data API asset upload, staging→prod, validation.",
+      "description": "End-to-end Webflow publishing for GreenM — blog posts and case studies. Krea image generation, Data API asset upload, staging→prod, validation, Rich Text embed handling for tables and body images.",
       "author": "Sierikov <osierikov@greenm.io>",
       "category": "Publishing",
       "tags": ["webflow", "cms", "publishing", "aeo", "case-study", "blog"]
-    },
-    {
-      "name": "content-20-test",
-      "source": "./content-20-test",
-      "description": "Test bundle — aeo-content skill (workspace provisioning, image concept rationale, Track-1/Track-2 image split) plus a snapshot of webflow-publish (table→embed, body-image full-width). For dev validation before changes graduate into the production greenm-webflow-publish plugin.",
-      "author": "Sierikov <osierikov@greenm.io>",
-      "category": "Testing",
-      "tags": ["test", "aeo", "content", "webflow", "dev"]
     }
   ]
 }

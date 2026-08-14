@@ -88,16 +88,20 @@ Use Python's `markdown` library with the `extra` + `sane_lists` extensions:
 3. Strip any "Source of truth" footer note that references OneDrive (it's a read-only-mirror reminder for Linear, not for prod)
 4. Pass through `markdown.markdown(md, extensions=['extra', 'sane_lists'])`
 5. Post-process external links: any `<a href="...">` where href does NOT contain `greenm.io` → add `rel="nofollow noopener"` (per GreenM blog convention). Internal greenm.io links stay bare.
-6. **CRITICAL — collapse inter-tag whitespace**: `html = re.sub(r'>\s+<', '><', html)`. Webflow Rich Text API silently sanitizes body content if there are newlines/whitespace between top-level tags. Newlines inside `<ul>/<ol>` become stray text nodes, which causes Webflow to drop the entire list block — and any `<hr>`, `<a>` links inside or near it. The `create_collection_items` response will echo your input verbatim, so the bug is invisible until you re-read the item or check the live page. Always emit body as one continuous string. (Discovered on GRO-370 → cqc-incident-learning-loop publish; fix Claude Code suggested 2026-06-10.)
+6. **Detect and wrap tables as Rich Text embeds.** The Webflow Rich Text API strips `<table>` tags (not in the whitelist). Any markdown table in the draft becomes flat text runs on publish unless it's wrapped in a `<div class="w-embed">` block with inline styling. Run `transform_tables(html)` from `references/embed-blocks.md` §1 — it finds every `<table>...</table>` in the converted HTML and replaces each with a self-contained styled embed (dark theme, GreenM palette, all styles inline so the embed doesn't depend on external CSS). Report the count to the user: *"Detected N table(s), wrapping each as Rich Text embed."*
+7. **Detect and wrap body images for full-width display.** Rich Text renders bare `<img>` at natural pixel dimensions, so an in-post diagram or schema appears as a small island in the middle of the column with wide side margins — ugly for anything non-photographic. Run `transform_body_images(html)` from `references/embed-blocks.md` §2 — it wraps every `<img>` in a `w-embed` block with inline `width:100%; height:auto; display:block; border-radius:8px; margin:32px 0;`. This applies **only to images inside `post-body`** (from markdown `![alt](cdn-url)`); featured/thumbnail images bound to `main-image` and `thumbnail-image` CMS fields render via the Blog Posts template and are not touched. Report the count: *"Detected N in-post image(s), wrapping each as full-width Rich Text embed."*
+8. **CRITICAL — collapse inter-tag whitespace**: `html = re.sub(r'>\s+<', '><', html)`. Webflow Rich Text API silently sanitizes body content if there are newlines/whitespace between top-level tags. Newlines inside `<ul>/<ol>` become stray text nodes, which causes Webflow to drop the entire list block — and any `<hr>`, `<a>` links inside or near it. The `create_collection_items` response will echo your input verbatim, so the bug is invisible until you re-read the item or check the live page. Always emit body as one continuous string. (Discovered on GRO-370 → cqc-incident-learning-loop publish; fix Claude Code suggested 2026-06-10.)
 
 Verify the output:
 - Section headings are `<h2>`, sub-headings `<h3>`
 - Bullet lists use `<ul><li>`, numbered lists `<ol><li>`
 - `<strong>` for bold-prefix bullets (e.g., "**Safe**: are people protected...")
 - All external CQC/data.gov.uk/etc. links carry `rel="nofollow noopener"`
+- **Zero bare `<table>` tags** — every table is wrapped in `<div class="w-embed">`. Grep: `html.count('<table>') == html.count('<div class="w-embed"')` for table-only embeds (adjust if you have non-table embeds like CTA blocks or body images).
+- **Every body `<img>` sits inside a `<div class="w-embed">`** for full-width display. Bare `<img>` renders at natural pixel size with side margins — check that Step 4.7 (`transform_body_images`) ran.
 - **No newlines between tags** — `assert '>\n<' not in html and '> <' not in html` should pass. If `<` is preceded by anything other than `>` directly, Webflow will drop content. Test: `re.search(r'>\s+<', html)` should return None.
 
-See `references/markdown-conversion.md` for the full conversion ruleset and edge cases.
+See `references/markdown-conversion.md` for the full conversion ruleset and edge cases, and `references/embed-blocks.md` for embed templates (tables, body images, CTAs, future patterns).
 
 ### Step 5 — Compact FAQ JSON
 

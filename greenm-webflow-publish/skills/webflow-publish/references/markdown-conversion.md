@@ -137,11 +137,19 @@ The `markdown` library passes through HTML inline. If the draft has `<sup>` or `
 
 ### Tables
 
-Markdown tables (`| col | col |`) require the `extra` extension (already enabled). They convert to `<table><thead><tr><th>...</th></tr></thead><tbody>...</tbody></table>`. Webflow Rich Text DOES support tables.
+Markdown tables (`| col | col |`) require the `extra` extension (already enabled). They convert to `<table><thead><tr><th>...</th></tr></thead><tbody>...</tbody></table>`.
+
+**Webflow Rich Text does NOT support raw `<table>` tags** — earlier notes claiming otherwise were wrong; the Rich Text whitelist strips `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>` on submit, leaving cell contents as flat concatenated text on the live page. Discovered on the `healthcare-genai-from-pilot-to-production` post 2026-08 — first publish showed cell values as one continuous line of text.
+
+**Fix (built into Step 4 of the workflow):** wrap every converted `<table>...</table>` in a Rich Text embed block with inline CSS. See `references/embed-blocks.md` §1 for the exact template, the `transform_tables()` helper function, and the verification token to grep for in the post-write sanitization check.
+
+Do NOT rely on the default `markdown.markdown()` table output — always run it through `transform_tables()` before the whitespace-collapse step.
 
 ### Images inside body
 
 If the draft references images via `![alt](url)`, they convert to `<img alt="alt" src="url"/>`. For Webflow CMS Rich Text, images need to be uploaded to Webflow Assets first and the URL must be the CDN URL. If body has inline images, upload them to Webflow Assets via the same flow as featured/thumbnail (Step 3 of main workflow) and replace src URLs before submitting.
+
+**Body `<img>` tags must be wrapped as Rich Text embeds for full-width display.** Rich Text renders bare `<img>` at natural pixel dimensions — an in-post diagram or schema then appears as a small island with wide side margins (fine for photos, ugly for anything technical). Run `transform_body_images()` from `references/embed-blocks.md` §2 during Step 4.7 to wrap every body `<img>` in `<div class="w-embed"><img style="width:100%;height:auto;display:block;border-radius:8px;margin:32px 0;" .../></div>`. This does NOT touch featured/thumbnail images — those are bound to `main-image` and `thumbnail-image` CMS fields via the template.
 
 ### Code blocks
 
