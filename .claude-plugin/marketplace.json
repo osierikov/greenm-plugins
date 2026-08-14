@@ -8,10 +8,16 @@
     {
       "name": "aeo-content",
       "source": "./aeo-content",
-      "description": "GreenM AEO content authoring — 8-stage workflow with Stage 2.5 workspace provisioning (drafts folder + Linear ticket pair assigned to initiator), channel- and voice-aware output, Track-1/Track-2 image split with mandatory concept rationale and Featured/OG legibility gates. Pairs with greenm-webflow-publish to cover the full pipeline from topic to live post.",
+      "description": "GreenM AEO content authoring — 8-stage workflow. Stage 2.5 provisions drafts folder + Linear ticket assigned to initiator. Channel- and voice-aware. Two-track image logic with concept rationale.",
       "author": "Sierikov <osierikov@greenm.io>",
       "category": "Content",
-      "tags": ["aeo", "content", "authoring", "writing", "greenm"]
+      "tags": [
+        "aeo",
+        "content",
+        "authoring",
+        "writing",
+        "greenm"
+      ]
     },
     {
       "name": "greenm-webflow-publish",
@@ -19,7 +25,14 @@
       "description": "End-to-end Webflow publishing for GreenM — blog posts and case studies. Krea image generation, Data API asset upload, staging→prod, validation, Rich Text embed handling for tables and body images.",
       "author": "Sierikov <osierikov@greenm.io>",
       "category": "Publishing",
-      "tags": ["webflow", "cms", "publishing", "aeo", "case-study", "blog"]
+      "tags": [
+        "webflow",
+        "cms",
+        "publishing",
+        "aeo",
+        "case-study",
+        "blog"
+      ]
     }
   ]
 }

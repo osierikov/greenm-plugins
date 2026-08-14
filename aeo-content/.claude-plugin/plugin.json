@@ -1,10 +1,16 @@
 {
   "name": "aeo-content",
-  "version": "0.6.3",
-  "description": "GreenM AEO content authoring — 8-stage workflow from ideation to publish-kit. Stage 2.5 provisions the drafts folder + Linear ticket pair (assigned to initiator via Cowork email → Linear user lookup). Channel-aware (blog / service / case study / LinkedIn / external / Substack). Voice-aware (Alexey Litvin / GreenM brand / Universal / Custom). Two-track image logic: Track 1 photo-realistic Featured/OG (four legibility gates), Track 2 in-post schemas. Mandatory concept rationale before any image is shown or briefed.",
+  "version": "0.6.4",
+  "description": "GreenM AEO content authoring — 8-stage workflow. Stage 2.5 provisions drafts folder + Linear ticket assigned to initiator. Channel- and voice-aware. Two-track image logic with concept rationale.",
   "author": {
     "name": "Sierikov / GreenM Growth",
     "email": "osierikov@greenm.io"
   },
-  "keywords": ["greenm", "aeo", "content", "authoring", "writing"]
+  "keywords": [
+    "greenm",
+    "aeo",
+    "content",
+    "authoring",
+    "writing"
+  ]
 }

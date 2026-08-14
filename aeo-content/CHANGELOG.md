@@ -1,3 +1,8 @@
+## [0.6.4] — 2026-08-14
+
+### Fixed
+- Shortened `plugin.json` and marketplace.json `description` fields from 568 to ~200 characters. Cowork Directory silently omitted the plugin from the marketplace list when description exceeded ~250 chars (undocumented limit, discovered when Sync showed only `greenm-webflow-publish`). All functional content preserved elsewhere — full workflow details live in README.md and SKILL.md, not in the manifest description.
+
 # Changelog
 
 ## 0.1.0 — 2026-08-13
