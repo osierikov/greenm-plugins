@@ -12,6 +12,14 @@
       "author": "Sierikov <osierikov@greenm.io>",
       "category": "Publishing",
       "tags": ["webflow", "cms", "publishing", "aeo", "case-study", "blog"]
+    },
+    {
+      "name": "content-20-test",
+      "source": "./content-20-test",
+      "description": "Test bundle — aeo-content skill (workspace provisioning, image concept rationale, Track-1/Track-2 image split) plus a snapshot of webflow-publish (table→embed, body-image full-width). For dev validation before changes graduate into the production greenm-webflow-publish plugin.",
+      "author": "Sierikov <osierikov@greenm.io>",
+      "category": "Testing",
+      "tags": ["test", "aeo", "content", "webflow", "dev"]
     }
   ]
 }
