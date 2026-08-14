@@ -1,6 +1,6 @@
 {
   "name": "aeo-content",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "GreenM AEO content authoring — 8-stage workflow. Stage 2.5 provisions drafts folder + Linear ticket assigned to initiator. Channel- and voice-aware. Two-track image logic with concept rationale.",
   "author": {
     "name": "Sierikov / GreenM Growth",

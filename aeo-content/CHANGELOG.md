@@ -1,3 +1,10 @@
+# Changelog
+
+## [0.6.5] — 2026-08-14
+
+### Fixed
+- **Stage 7b Featured/OG brief no longer stops at "I have not generated anything yet."** On the cqc-no-inspection-for-years test run the skill wrote a strong concept + legibility-gate rationale for the Featured image, then closed with "To produce the actual generation prompt, run the img-for-blog skill against this brief. I have not generated anything yet." — leaving the workflow suspended and no image on disk. SKILL.md Stage 7b now explicitly requires invoking `img-for-blog` immediately after the four gates pass and the user approves the concept: call the skill (or inline its process) so a ready-to-paste generation prompt lands in the same message. If a connected image generator is available (Krea MCP, Nano Banana bridge, etc.), the skill uses it to produce the file directly into `content/{channel}/drafts/{slug}/img/` with the correct name. Otherwise it hands the user the prompt and picks up center-cropping when the file returns.
+
 ## [0.6.4] — 2026-08-14
 
 ### Fixed

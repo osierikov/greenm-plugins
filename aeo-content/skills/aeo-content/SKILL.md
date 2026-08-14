@@ -158,6 +158,10 @@ Do not auto-generate schemas — always confirm each one. In-post schemas are op
 
 Independent from any Track-2 work. Featured is always required. Follow the `img-for-blog` skill rules — photo-realistic Mode A (interior scene), Mode B (abstract still-life), or Mode C (hybrid interior + unobtrusive screen with no readable text). Never Mode-D or any diagram/schema variant for this slot.
 
+**After the brief passes all four legibility gates and the user approves the concept, invoke the `img-for-blog` skill directly.** Do not stop with a phrase like "run `img-for-blog` against this brief" or "I have not generated anything yet" — that leaves the workflow broken. The correct behaviour is to call the skill (via the Skill tool if available in this session; otherwise inline the `img-for-blog` process against the approved brief) so that a ready-to-paste generation prompt lands in the same message. Pass the approved concept, mode choice, and any tweaks from the user into the `img-for-blog` invocation. If the user has a preferred generator connected (Krea MCP, Nano Banana bridge, etc.), and the connector supports image generation, use it to produce the file directly and save it into `content/{channel}/drafts/{slug}/img/` with the correct name (`{slug}-featured.png`, `{slug}-thumbnail.png`). If not, deliver the prompt and ask the user to run it in Krea / Midjourney / Nano Banana externally — then, when they paste back the image, do the center-crop with `img-for-blog` in "resize an uploaded image" mode.
+
+Do not leave the workflow suspended at "brief written, awaiting external action" without at least the generation prompt in hand. That was the failure mode observed in the cqc-no-inspection-for-years test run.
+
 **Legibility rules — enforce before delivering the brief, not after generation:**
 
 The Featured image renders at 1024×536 as a card in feeds and at 1200×630 as OG in previews — the reader sees it for two seconds while scrolling. The brief must produce something that survives that glance. Check every candidate concept against these four gates before writing the prompt:
