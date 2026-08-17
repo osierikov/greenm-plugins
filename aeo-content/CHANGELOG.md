@@ -1,3 +1,14 @@
+# Changelog
+
+## [0.7.1] — 2026-08-17
+
+### Fixed
+- **Stage 7b no longer stalls the image workflow by treating the concept as a proposal awaiting approval.** Two observed failure modes:
+  1. `cqc-no-inspection-for-years` (v0.6.4) — skill wrote the brief, closed with "I have not generated anything yet."
+  2. `compliance-gap-evidence-mapping-problem` (v0.7.0) — skill wrote the rationale, then listed "cover image, schemas, CTA blocks, publication timing" as a numbered list of decisions for the user, leaving generation postponed. Krea MCP was connected; skill did not use it until the user asked "чому немає зображень?"
+- SKILL.md Stage 7b now explicitly requires the rationale AND the generation to land in the same message. Redirect is allowed after generation; stall before generation is not. Explicit forbidden phrasings: "run `img-for-blog` against this brief," "cover image approved for generation" as a to-do item, "N decisions for you: cover, schemas, ..." lists.
+- If a connected image generator (Krea MCP, Nano Banana bridge, etc.) is available, skill uses it directly and saves to `img/{slug}-cover.png` / `img/{slug}-NN.png` in the same turn. If not, `img-for-blog` runs inline and delivers a ready-to-paste prompt.
+
 ## [0.7.0] — 2026-08-14
 
 ### Changed

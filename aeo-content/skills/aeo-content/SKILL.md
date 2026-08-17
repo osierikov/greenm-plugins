@@ -168,9 +168,17 @@ Independent from any Track-2 work. Cover is always required. Follow the `img-for
 
 **Naming convention — one file per post, mandatory.** The cover lives at `content/{channel}/drafts/{slug}/img/{slug}-cover.png` — 1200×630 (Open Graph exact). Only one file. **`webflow-publish` derives the thumbnail (1024×536) automatically on upload** — do not create a separate `{slug}-cover-thumbnail.png` on disk. The old separate-thumbnail convention (`{slug}-featured.png` + `{slug}-thumbnail.png`) is deprecated; do not use it for new posts.
 
-**After the brief passes all four legibility gates and the user approves the concept, invoke the `img-for-blog` skill directly.** Do not stop with a phrase like "run `img-for-blog` against this brief" or "I have not generated anything yet" — that leaves the workflow broken. The correct behaviour is to call the skill (via the Skill tool if available in this session; otherwise inline the `img-for-blog` process against the approved brief) so that a ready-to-paste generation prompt lands in the same message. Pass the approved concept, mode choice, and any tweaks from the user into the `img-for-blog` invocation. If the user has a preferred generator connected (Krea MCP, Nano Banana bridge, etc.), and the connector supports image generation, use it to produce the file directly and save it into `content/{channel}/drafts/{slug}/img/` with the correct name (`{slug}-featured.png`, `{slug}-thumbnail.png`). If not, deliver the prompt and ask the user to run it in Krea / Midjourney / Nano Banana externally — then, when they paste back the image, do the center-crop with `img-for-blog` in "resize an uploaded image" mode.
+**After the four legibility gates pass, generate immediately in the same message as the rationale. Do NOT pause for a separate approval turn.** The rationale itself is the reveal — the user reads it, and if they disagree they will steer. Do not ask "shall I generate?" or add the concept to a list of "decisions for you" alongside CTAs and publication timing. That framing stalls the workflow. The correct behaviour:
 
-Do not leave the workflow suspended at "brief written, awaiting external action" without at least the generation prompt in hand. That was the failure mode observed in the cqc-no-inspection-for-years test run.
+1. State the concept rationale (all 4 or 8 questions answered) and legibility gates outcome in one paragraph.
+2. **In the same turn**, run the generation:
+   - If a connected image generator is available in this session (Krea MCP, Nano Banana bridge, or any other image-generation tool the assistant can call), use it directly. Save the result to `content/{channel}/drafts/{slug}/img/{slug}-cover.png` (1200×630) for the cover, and to `content/{channel}/drafts/{slug}/img/{slug}-NN.png` for schemas.
+   - If no generator is connected, invoke the `img-for-blog` skill inline to produce a ready-to-paste generation prompt and put it in the same message.
+3. Only after (1) + (2) are both delivered, invite the user to redirect the concept, tweak the prompt, or accept.
+
+Do NOT write phrases like "run `img-for-blog` against this brief," "I have not generated anything yet," "cover image approved for generation" as a to-do, or "four decisions for you: cover, schemas, CTAs, publish timing." All of those leave the image work suspended waiting for a nudge that shouldn't be needed. The two failure modes observed in test runs (cqc-no-inspection-for-years → prompt-not-delivered; compliance-gap-evidence-mapping-problem → generation-postponed-as-todo) were both caused by treating the rationale as a proposal that needs explicit approval instead of as a completed deliverable that ships with its output.
+
+Redirect is always allowed after generation. Stall is not allowed before generation.
 
 **Legibility rules — enforce before delivering the brief, not after generation:**
 
