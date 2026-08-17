@@ -127,7 +127,7 @@ Publish flow depends on the channel.
 - **Key Takeaways** (3–5 standalone bullets, one per line) — each bullet must make sense quoted out of context; AI engines extract individual lines
 - Schema JSON-LD ready to paste into Webflow page-level schema field (`references/webflow.md`)
 - Internal link list (anchor text + target URL)
-- Featured image brief with **concept rationale** on top (see below — follows GreenM Visual Content Rules v1.1)
+- Cover image brief with **concept rationale** on top (see below — follows GreenM Visual Content Rules v1.1)
 - Last reviewed date (CMS field)
 
 Excerpt, TLDR, and Key Takeaways are three **distinct** CMS fields — never collapse them into one. See `references/webflow.md` §1A for the writing rules and the difference between them. All three go into the publish-kit.md as separate rows in the CMS field mapping table.
@@ -136,13 +136,13 @@ Load `references/webflow.md` for exact field mappings and Webflow-specific gotch
 
 **Two separate image tracks — do not conflate them.** Every post can carry two kinds of visuals, and they are designed and generated *differently*. Never treat them as one job.
 
-- **Track 1 — Featured / OG image (mandatory, one per post):** the hero + Open Graph preview card. Must be **photo-realistic**, no text, no UI, no readable labels — see the `img-for-blog` skill Mode A / B / C rules. This image lives in `main-image` and `thumbnail-image` CMS fields (1200×630 + 1024×536). Always required. Never use a diagram or schema here — social preview cards render at small size, text and UI elements become illegible, and the image looks like a stock infographic rather than a magazine cover.
+- **Track 1 — Cover image (mandatory, one per post):** the hero + Open Graph preview card. Must be **photo-realistic**, no text, no UI, no readable labels — see the `img-for-blog` skill Mode A / B / C rules. Lives on disk as `{slug}-cover.png` (1200×630); `webflow-publish` uploads it into the `main-image` CMS field and auto-derives the 1024×536 thumbnail for `thumbnail-image`. Always required. Never use a diagram or schema here — social preview cards render at small size, text and UI elements become illegible, and the image looks like a stock infographic rather than a magazine cover.
 
 - **Track 2 — In-post schemas / diagrams (optional, zero-to-many per post):** UI-style illustrations embedded in the body to explain a decision, a transition, a comparison, or a sequence. These use the GreenM design system (typography, palette, buttons, cards — see `greenm-design` skill). They may carry readable text, arrows, branches, tabs. They live inside the post body, not in the featured slot.
 
 ### Stage 7a — Image inventory (mandatory scan before any image work)
 
-Before writing the Featured image brief, scan the finished draft for candidates that would benefit from a Track-2 in-post schema. Look specifically for:
+Before writing the Cover image brief, scan the finished draft for candidates that would benefit from a Track-2 in-post schema. Look specifically for:
 
 1. **Decision tree / yes-no branching** — the draft asks a question and splits into two paths with different consequences.
 2. **Framework transition** — old thing → new thing (e.g. "one SAF becomes four sector frameworks"), before/after states.
@@ -152,11 +152,21 @@ Before writing the Featured image brief, scan the finished draft for candidates 
 
 If any pattern is present, list the candidates to the user as a menu. For each, give a one-sentence rationale (which section of the post, what the schema clarifies, why a diagram beats prose here). Then pause for the user to pick: (a) generate this schema, (b) skip it, (c) modify the concept first.
 
-Do not auto-generate schemas — always confirm each one. In-post schemas are optional; a good post can ship with zero. But if you scanned and found no candidates, say so explicitly ("I scanned the draft — no decision trees, transitions, or comparison structures that would benefit from a diagram; proceeding with Featured image only") so the user knows the check was run.
+Do not auto-generate schemas — always confirm each one. In-post schemas are optional; a good post can ship with zero. But if you scanned and found no candidates, say so explicitly ("I scanned the draft — no decision trees, transitions, or comparison structures that would benefit from a diagram; proceeding with Cover image only") so the user knows the check was run.
 
-### Stage 7b — Featured / OG image brief
+**Naming convention — mandatory.** Every schema is saved into `content/{channel}/drafts/{slug}/img/` using the post slug as prefix and a two-digit sequence number based on **order of appearance in the body** (not order of generation):
 
-Independent from any Track-2 work. Featured is always required. Follow the `img-for-blog` skill rules — photo-realistic Mode A (interior scene), Mode B (abstract still-life), or Mode C (hybrid interior + unobtrusive screen with no readable text). Never Mode-D or any diagram/schema variant for this slot.
+- `{slug}-01.png` — first schema encountered as you read the draft top-to-bottom
+- `{slug}-02.png` — second, etc.
+- Optional embed sidecar: `{slug}-NN-embed.html` — the styled HTML for Rich Text embed insertion by `webflow-publish` (same NN as its PNG)
+
+Do NOT use ad-hoc names like `schema-a`, `decision-tree`, `comparison-1`, or slug-truncated variants. Every file in `img/` must start with the exact full slug. This keeps the folder sortable, unambiguous when files migrate to Webflow Assets (which is flat across the site), and predictable for `webflow-publish` to pick up.
+
+### Stage 7b — Cover image brief (was: Featured / OG)
+
+Independent from any Track-2 work. Cover is always required. Follow the `img-for-blog` skill rules — photo-realistic Mode A (interior scene), Mode B (abstract still-life), or Mode C (hybrid interior + unobtrusive screen with no readable text). Never Mode-D or any diagram/schema variant for this slot.
+
+**Naming convention — one file per post, mandatory.** The cover lives at `content/{channel}/drafts/{slug}/img/{slug}-cover.png` — 1200×630 (Open Graph exact). Only one file. **`webflow-publish` derives the thumbnail (1024×536) automatically on upload** — do not create a separate `{slug}-cover-thumbnail.png` on disk. The old separate-thumbnail convention (`{slug}-featured.png` + `{slug}-thumbnail.png`) is deprecated; do not use it for new posts.
 
 **After the brief passes all four legibility gates and the user approves the concept, invoke the `img-for-blog` skill directly.** Do not stop with a phrase like "run `img-for-blog` against this brief" or "I have not generated anything yet" — that leaves the workflow broken. The correct behaviour is to call the skill (via the Skill tool if available in this session; otherwise inline the `img-for-blog` process against the approved brief) so that a ready-to-paste generation prompt lands in the same message. Pass the approved concept, mode choice, and any tweaks from the user into the `img-for-blog` invocation. If the user has a preferred generator connected (Krea MCP, Nano Banana bridge, etc.), and the connector supports image generation, use it to produce the file directly and save it into `content/{channel}/drafts/{slug}/img/` with the correct name (`{slug}-featured.png`, `{slug}-thumbnail.png`). If not, deliver the prompt and ask the user to run it in Krea / Midjourney / Nano Banana externally — then, when they paste back the image, do the center-crop with `img-for-blog` in "resize an uploaded image" mode.
 
@@ -164,7 +174,7 @@ Do not leave the workflow suspended at "brief written, awaiting external action"
 
 **Legibility rules — enforce before delivering the brief, not after generation:**
 
-The Featured image renders at 1024×536 as a card in feeds and at 1200×630 as OG in previews — the reader sees it for two seconds while scrolling. The brief must produce something that survives that glance. Check every candidate concept against these four gates before writing the prompt:
+The Cover image renders at 1024×536 as a card in feeds and at 1200×630 as OG in previews — the reader sees it for two seconds while scrolling. The brief must produce something that survives that glance. Check every candidate concept against these four gates before writing the prompt:
 
 1. **One focal point.** There is exactly one object the eye lands on first. If two objects compete for weight (same size, same lighting, both centered), the composition fails. Position: centered or on a rule-of-thirds intersection. Everything else in the frame is supporting cast — smaller, softer focus, or in negative space.
 
@@ -193,14 +203,14 @@ Applies to **both tracks**. Whenever this skill produces an image brief (Track 1
 3. **How does the visual map to the post's main insight?** — one sentence tying the picture to the reader question from Stage 2.
 4. **What was considered and rejected, and why?** — one sentence naming the runner-up concept and why it was set aside (too literal, would date poorly, wrong track for the slot, etc.).
 
-For **Track 1 (Featured/OG)**, add four more answers — the legibility gates from Stage 7b. These are pass/fail; if any fail, do not deliver the brief:
+For **Track 1 (Cover)**, add four more answers — the legibility gates from Stage 7b. These are pass/fail; if any fail, do not deliver the brief:
 
 5. **Focal point:** which single object is the eye supposed to land on? (Name it in one word or short phrase.)
 6. **Element count:** list the symbolic elements in the frame. Must be ≤ 3.
 7. **Decode-without-caption:** finish this sentence in one clause — *"A reader who has not seen this post will read the image as: ..."* If you cannot finish it cleanly, the concept is too abstract.
 8. **Two-second thumbnail test:** imagine the image at 200px wide. What survives? If the focal object or the metaphor is unreadable at that size, revise.
 
-The rationale sits in `publish-kit.md` immediately above each image brief as a section titled **"Concept rationale — Featured"** or **"Concept rationale — In-post schema {N}"**. In the Cowork chat, when Claude previews the image (either the brief before generation, or the finished file after cropping), the rationale is stated out loud first — never show the image or the brief without it. This gives the user a decision point before a generation cycle is spent.
+The rationale sits in `publish-kit.md` immediately above each image brief as a section titled **"Concept rationale — Cover"** or **"Concept rationale — In-post schema {NN}"** (matching the `{slug}-NN.png` filename). In the Cowork chat, when Claude previews the image (either the brief before generation, or the finished file after cropping), the rationale is stated out loud first — never show the image or the brief without it. This gives the user a decision point before a generation cycle is spent.
 
 **LinkedIn post:** Provide:
 - Post body (formatted for LinkedIn: short paragraphs, line breaks between blocks)

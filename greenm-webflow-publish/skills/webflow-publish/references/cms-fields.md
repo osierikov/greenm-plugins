@@ -43,12 +43,14 @@ Full field list as returned by `data_cms_tool.get_collection_details`. Help text
 - Type: Image
 - Format: `{"fileId": "<asset id>", "url": "<asset cdn url>", "alt": "<alt text>"}`
 - Used as Open Graph image + blog hero
+- **Source file:** `content/{channel}/drafts/{slug}/img/{slug}-cover.png`, 1200×630 exact (produced by `aeo-content` Stage 7b)
 
 ### `thumbnail-image`
 
 - Type: Image, same format as main-image
 - Help text: "Smaller version of main image that is used on blog post grid"
 - Used on blog index card
+- **Derived, not authored:** `webflow-publish` Step 3 resizes the cover PNG to 1024×536 with Pillow (`Image.LANCZOS`), uploads under the filename `{slug}-cover-thumbnail.png`, and binds the resulting asset here. No separate thumbnail file lives in the draft folder on disk.
 
 ### `category`
 

@@ -27,8 +27,9 @@ Locate these files first. Standard location is `Lucy - growth/docs/content/blog/
 
 - `publish-kit.md` — Webflow CMS field mapping, FAQ JSON, image brief, external link list. Source of truth for field values.
 - `blog_{slug}_{date}_v{N}.md` — final draft body (markdown with YAML frontmatter). Use the highest version number.
-- `{slug}-featured.png` — Open Graph + blog hero image. Must be 1200×628 (or close — 1200×670 is acceptable, FB crops centered).
-- `{slug}-thumbnail.png` — Smaller card image, 1024×536 (or close).
+- `img/{slug}-cover.png` — cover image (hero + Open Graph), 1200×630 exact. Produced by `aeo-content` Stage 7b. Exactly one file — the 1024×536 thumbnail is auto-derived in Step 3 during Webflow Assets upload, not stored on disk.
+- `img/{slug}-01.png`, `img/{slug}-02.png`, … — optional in-post schemas from `aeo-content` Stage 7a, numbered by order of appearance in the body. Each may have a sidecar `img/{slug}-NN-embed.html` (styled HTML for Rich Text embed — see Step 4.6/4.7).
+- **Legacy note:** older drafts may use `{slug}-featured.png` + `{slug}-thumbnail.png`. If you find these, ask the user whether to rename or accept as-is; do not silently rewrite disk files.
 
 If files are missing or under different names, ask the user. Do not invent values.
 
@@ -53,24 +54,45 @@ Read `publish-kit.md` and the latest `blog_*_v*.md` file. List which files are p
 
 ### Step 2 — Validate image dimensions and naming
 
-Run `file {slug}-featured.png` and `file {slug}-thumbnail.png` via bash. Confirm:
+Run `file img/{slug}-cover.png` (plus any `img/{slug}-NN.png` schemas) via bash. Confirm:
 
-- Featured ≥ 1200px wide, aspect ratio ~1.9:1 (1200×628 ideal, 1200×670 acceptable)
-- Thumbnail ≥ 1024px wide
-- Filenames match `{post-slug}-featured.png` and `{post-slug}-thumbnail.png` (per `[[feedback_blog_image_naming]]`). Rename if needed.
+- **Cover:** 1200×630 exact (OG-standard). If off — flag and ask for regen; do not upscale.
+- **Filename:** must be `{post-slug}-cover.png` (one file only — thumbnail is derived in Step 3, not stored on disk).
+- **In-post schemas:** any additional PNGs in `img/` follow `{slug}-NN.png` pattern (two-digit sequence, numbered by body order). Each may have a `{slug}-NN-embed.html` sidecar.
+- **Legacy filenames** (`{slug}-featured.png`, `{slug}-thumbnail.png`) — warn user that convention changed; offer to rename to `{slug}-cover.png` (dropping thumbnail file) after confirmation.
 
 If dimensions are off, flag to user and offer regen or proceed-anyway.
 
 ### Step 3 — Upload images to Webflow Assets
 
+There are two kinds of images to upload here:
+
+1. **Cover image** (mandatory) — `img/{slug}-cover.png` (1200×630). Uploaded twice, under two different filenames:
+   - `{slug}-cover.png` — 1200×630 as-is, binds to `main-image` CMS field
+   - `{slug}-cover-thumbnail.png` — **auto-derived by resize from the cover PNG** to 1024×536, binds to `thumbnail-image` CMS field
+2. **In-post schemas** (optional) — `img/{slug}-01.png`, `-02.png`, … (embedded in `post-body` via Step 4.7). Uploaded once each under the same filename.
+
+Derive the thumbnail with Pillow before upload:
+
+```python
+from PIL import Image
+cover = Image.open(f'img/{slug}-cover.png')
+# Same 1.90 aspect ratio, no letterbox — pure downscale
+thumb = cover.resize((1024, 536), Image.LANCZOS)
+thumb.save(f'/tmp/{slug}-cover-thumbnail.png', optimize=True)
+```
+
+Do NOT save the thumbnail permanently to the draft folder — it's a transient artifact for upload only. Write to `/tmp/` and delete after Step 3 completes.
+
 Webflow MCP `asset_tool.upload_image_by_url` requires a public HTTP URL. Local files can't be uploaded directly via MCP — there are two paths:
 
 **Path A (preferred when user is available):**
-1. Tell user to drag-drop both files into Webflow Designer → Assets panel
-2. User confirms upload
-3. Run `asset_tool.get_all_assets_and_folders` with `query: "assets"` (NOTE: this requires the Webflow Designer to be open in an active browser tab — if MCP errors with "Unable to connect to Webflow Designer", ask user to open the Designer link returned in the error)
-4. Find the two assets by name, capture their `id` + `url` fields
-5. Set `altText` on both assets via `asset_tool.update_asset` using the alt text from publish-kit's image brief
+1. Derive the thumbnail (see above).
+2. Tell user to drag-drop both files (`{slug}-cover.png` + `{slug}-cover-thumbnail.png`) plus any `{slug}-NN.png` schemas into Webflow Designer → Assets panel
+3. User confirms upload
+4. Run `asset_tool.get_all_assets_and_folders` with `query: "assets"` (NOTE: this requires the Webflow Designer to be open in an active browser tab — if MCP errors with "Unable to connect to Webflow Designer", ask user to open the Designer link returned in the error)
+5. Find all uploaded assets by name, capture their `id` + `url` fields
+6. Set `altText` on each asset via `asset_tool.update_asset` using the alt text from publish-kit's image brief (cover) and the schema's rationale one-liner (for `{slug}-NN.png` files)
 
 **Path B (when user is not interactive):**
 1. Skip the upload step
@@ -89,7 +111,7 @@ Use Python's `markdown` library with the `extra` + `sane_lists` extensions:
 4. Pass through `markdown.markdown(md, extensions=['extra', 'sane_lists'])`
 5. Post-process external links: any `<a href="...">` where href does NOT contain `greenm.io` → add `rel="nofollow noopener"` (per GreenM blog convention). Internal greenm.io links stay bare.
 6. **Detect and wrap tables as Rich Text embeds.** The Webflow Rich Text API strips `<table>` tags (not in the whitelist). Any markdown table in the draft becomes flat text runs on publish unless it's wrapped in a `<div class="w-embed">` block with inline styling. Run `transform_tables(html)` from `references/embed-blocks.md` §1 — it finds every `<table>...</table>` in the converted HTML and replaces each with a self-contained styled embed (dark theme, GreenM palette, all styles inline so the embed doesn't depend on external CSS). Report the count to the user: *"Detected N table(s), wrapping each as Rich Text embed."*
-7. **Detect and wrap body images for full-width display.** Rich Text renders bare `<img>` at natural pixel dimensions, so an in-post diagram or schema appears as a small island in the middle of the column with wide side margins — ugly for anything non-photographic. Run `transform_body_images(html)` from `references/embed-blocks.md` §2 — it wraps every `<img>` in a `w-embed` block with inline `width:100%; height:auto; display:block; border-radius:8px; margin:32px 0;`. This applies **only to images inside `post-body`** (from markdown `![alt](cdn-url)`); featured/thumbnail images bound to `main-image` and `thumbnail-image` CMS fields render via the Blog Posts template and are not touched. Report the count: *"Detected N in-post image(s), wrapping each as full-width Rich Text embed."*
+7. **Detect and wrap body images for full-width display.** Rich Text renders bare `<img>` at natural pixel dimensions, so an in-post diagram or schema appears as a small island in the middle of the column with wide side margins — ugly for anything non-photographic. Run `transform_body_images(html)` from `references/embed-blocks.md` §2 — it wraps every `<img>` in a `w-embed` block with inline `width:100%; height:auto; display:block; border-radius:8px; margin:32px 0;`. This applies **only to images inside `post-body`** (from markdown `![alt](cdn-url)`); cover image (and its derived thumbnail) bound to `main-image` and `thumbnail-image` CMS fields render via the Blog Posts template and are not touched. Report the count: *"Detected N in-post image(s), wrapping each as full-width Rich Text embed."*
 8. **CRITICAL — collapse inter-tag whitespace**: `html = re.sub(r'>\s+<', '><', html)`. Webflow Rich Text API silently sanitizes body content if there are newlines/whitespace between top-level tags. Newlines inside `<ul>/<ol>` become stray text nodes, which causes Webflow to drop the entire list block — and any `<hr>`, `<a>` links inside or near it. The `create_collection_items` response will echo your input verbatim, so the bug is invisible until you re-read the item or check the live page. Always emit body as one continuous string. (Discovered on GRO-370 → cqc-incident-learning-loop publish; fix Claude Code suggested 2026-06-10.)
 
 Verify the output:
@@ -154,7 +176,7 @@ fieldData = {
   "tldr": "<40-80 words, ≥300 chars, complete standalone answer>",
   "post-body": "<HTML from Step 4>",
   "main-image": {"fileId": "<asset id from Step 3>", "url": "<asset url>", "alt": "<alt text>"},
-  "thumbnail-image": {"fileId": "<asset id>", "url": "<asset url>", "alt": "<alt text>"},
+  "thumbnail-image": {"fileId": "<derived from cover in Step 3>", "url": "<asset url>", "alt": "<alt text>"},
   "category": "<category ref id from Step 6>",
   "author": "<author ref id from Step 6>",
   "read-time": "<X min read>",
@@ -263,7 +285,7 @@ Move the Linear ticket to Done.
 
 3. **Global canonical URL** — Site Settings → SEO → Global canonical tag URL must be set to `https://greenm.io` (no trailing slash, no www). Without this, no page emits `<link rel="canonical">`. Site-wide setting, one-time fix. (Issue GRO-403.)
 
-4. **Image dimensions** — AI-generated images often come back at non-OG ratios (824×460 instead of 1200×628). Always validate at Step 2 and ask for regen if off. Don't upscale via Pillow — AI images degrade poorly.
+4. **Image dimensions** — AI-generated images often come back at non-OG ratios (824×460 or 1376×768 instead of 1200×630). Always validate at Step 2 and ask for regen if off, OR center-crop with `img-for-blog` in resize mode. Don't upscale via Pillow — AI images degrade poorly. Reminder: only one cover file (`{slug}-cover.png`) is stored on disk; the 1024×536 thumbnail is derived in Step 3.
 
 5. **Webflow Designer must be active** — `asset_tool` MCP requires the Webflow Designer to be open in an active browser tab. If the tool errors with "Unable to connect to Webflow Designer", share the Designer link from the error and ask user to open it foreground.
 

@@ -1,4 +1,18 @@
-# Changelog
+## 0.7.1 — 2026-08-14
+
+**Adopted the unified image naming convention** from `aeo-content` v0.7.0. `webflow-publish` now expects a single cover file, derives the thumbnail at upload time, and handles numbered in-post schemas.
+
+### Added
+- Step 3 now includes cover→thumbnail derivation via Pillow (`Image.LANCZOS` to 1024×536). Thumbnail is written to `/tmp/` as a transient upload artifact, never saved back to the draft folder. Both files upload to Webflow Assets under `{slug}-cover.png` and `{slug}-cover-thumbnail.png`.
+- Step 2 validation now expects `img/{slug}-cover.png` (1200×630 exact, one file) plus optional `img/{slug}-NN.png` schemas. Legacy `-featured.png` / `-thumbnail.png` filenames trigger a warning offering to rename, not silent acceptance.
+- `references/cms-fields.md` documents the source-file expectation for `main-image` and the derivation logic for `thumbnail-image`.
+
+### Changed
+- SKILL.md Inputs section, Step 2, Step 3, Step 4.7, and Common gotcha #4 all reference the new naming convention.
+
+### Compatibility
+- Existing posts already on Webflow are unaffected — this only changes how new drafts are staged and uploaded.
+- Drafts still on disk with old naming: publish workflow will pause at Step 2 with a rename prompt; nothing overwrites without user confirmation.
 
 ## 0.7.0 — 2026-08-14
 

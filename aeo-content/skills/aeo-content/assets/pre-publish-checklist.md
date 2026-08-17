@@ -70,16 +70,24 @@ Run when the channel produces a long-form piece with headings.
 
 - [ ] SEO Title: 50–60 chars, contains primary query phrase
 - [ ] SEO Description: 140–160 chars, answers the primary query directly
-- [ ] OG Image: 1200×630
+- [ ] OG Image: `{slug}-cover.png`, 1200×630 (one file only — `webflow-publish` auto-derives the thumbnail)
 - [ ] Canonical URL set only if content exists elsewhere
 - [ ] Schema: `BlogPosting` (or `Article` for case studies; `Service` for service pages) applied
 - [ ] Schema: `FAQPage` applied if FAQ section exists
 - [ ] Schema: Reference-field workaround applied if needed (see `references/webflow.md` §3)
-- [ ] Featured image alt text is descriptive (not "image" or filename)
+- [ ] Cover image alt text is descriptive (not "image" or filename)
+
+### Image files in `img/` (greenm.io only)
+
+- [ ] **Cover:** exactly one file named `{slug}-cover.png` at 1200×630 (no separate `{slug}-cover-thumbnail.png` — `webflow-publish` derives thumbnail on upload)
+- [ ] **In-post schemas** (if any): `{slug}-01.png`, `{slug}-02.png`, … numbered by order of appearance in the body (top-to-bottom)
+- [ ] Each schema PNG has a matching `{slug}-NN-embed.html` sidecar if it's meant to render as a Rich Text embed
+- [ ] No ad-hoc names (`schema-a.png`, `decision-tree.png`, `figure1.png`) — every file starts with the full slug
+- [ ] No legacy `-featured.png` / `-thumbnail.png` files in `img/` — those name conventions are deprecated
 
 ### Visual (greenm.io only)
 
-- [ ] Featured image follows GreenM Visual Content Rules v1.1 (Linear)
+- [ ] Cover image follows GreenM Visual Content Rules v1.1 (Linear)
 - [ ] No stock photos
 - [ ] No third-party logos in social visuals (rebuild in GreenM style if needed)
 - [ ] Teal `#1FD3AF` used only for UI elements, not in blob illustrations

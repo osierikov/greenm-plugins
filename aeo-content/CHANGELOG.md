@@ -1,4 +1,24 @@
-# Changelog
+## [0.7.0] — 2026-08-14
+
+### Changed
+- **Unified image naming convention.** Every image in a draft folder now uses the full post slug as prefix:
+  - **Cover** — `img/{slug}-cover.png` (1200×630, one file only). The 1024×536 thumbnail is derived on upload by `webflow-publish` v0.7.1+, not stored on disk.
+  - **In-post schemas** — `img/{slug}-01.png`, `img/{slug}-02.png`, … numbered by **order of appearance in the body** (top-to-bottom), not order of generation. Optional sidecar `img/{slug}-NN-embed.html` for Rich Text embed use.
+- Stage 7a and Stage 7b in SKILL.md updated with the new convention as a mandatory rule. Terminology switched from "Featured / OG" to "Cover" throughout. Concept rationale sections retitled accordingly.
+- `references/workspace-provisioning.md` §5 folder scaffold updated with the new file list.
+- `references/content-types.md` CMS field list references `Cover Image` (with auto-thumbnail note) instead of `Featured Image`.
+- `assets/pre-publish-checklist.md` now has a dedicated "Image files in `img/`" section enforcing the naming rules.
+
+### Rationale
+- Every asset in Webflow Assets (a flat list across the site) stays scannable and unambiguous.
+- Draft folder is sortable in Finder — all files for one post group together.
+- Regenerating a specific schema no longer requires guessing which "schema-a" it was.
+- `webflow-publish` can grep `{slug}-*.png` deterministically without listing files first.
+
+### Deprecated
+- `{slug}-featured.png` + `{slug}-thumbnail.png` (old two-file cover pattern).
+- Ad-hoc names in `img/`: `schema-a.png`, `decision-tree.png`, `figure1.png`, bare `cover.png` without slug prefix.
+- Existing published posts keep their old-named assets — do not rename what's already live in Webflow. The convention change applies to drafts on disk and future publishes only.
 
 ## [0.6.5] — 2026-08-14
 

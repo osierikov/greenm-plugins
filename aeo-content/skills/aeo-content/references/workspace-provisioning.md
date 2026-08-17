@@ -175,7 +175,8 @@ Later stages write additional files into the same folder:
 - `outline.md` (Stage 4)
 - `blog_{slug}_{YYYY-MM-DD}_v1.md` (Stage 5 — draft, versioned)
 - `publish-kit.md` (Stage 7)
-- `{slug}-featured.png`, `{slug}-thumbnail.png` (external — from `img-for-blog` skill)
+- `img/{slug}-cover.png` — cover image, 1200×630. Exactly one per post. `webflow-publish` auto-derives the 1024×536 thumbnail on upload.
+- `img/{slug}-01.png`, `img/{slug}-02.png`, … — optional in-post schemas, numbered by order of appearance in the body. Each may have a sidecar `img/{slug}-NN-embed.html` (styled HTML for Rich Text embed by `webflow-publish`).
 
 ## §6 Ordering guarantees
 

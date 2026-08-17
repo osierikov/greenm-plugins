@@ -1,6 +1,6 @@
 {
   "name": "greenm-webflow-publish",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "End-to-end Webflow publishing for GreenM. Two skills: webflow-publish (blog posts) and case-study-publish (case studies). Case studies are runtime-aware and can generate missing images with Krea (hero/OG/section), save them to imgs/, and auto-upload (native Data API under Claude Code; Krea upload-URL bridge under Cowork). Includes AEO rationale and the Webflow Rich Text sanitization fix.",
   "author": {
     "name": "Sierikov",

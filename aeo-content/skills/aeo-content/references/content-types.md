@@ -105,7 +105,7 @@ H2: What this means for clinics
 
 ### Required CMS fields (Webflow Blog Posts collection)
 
-Title, Slug, **Excerpt** (140–180 chars, 2–3 sentences — post card + meta description fallback), **TLDR** (40–80 words — complete standalone answer; cited snippet for AI engines), **Key Takeaways** (3–5 standalone bullets, one per line, each must make sense out of context), Body, Featured Image (1200×630 OG-sized), Category, Author (Reference), Published Date, Last Reviewed Date, Read Time, SEO Title (≤60 chars), SEO Description (≤155 chars), OG Image, Canonical URL.
+Title, Slug, **Excerpt** (140–180 chars, 2–3 sentences — post card + meta description fallback), **TLDR** (40–80 words — complete standalone answer; cited snippet for AI engines), **Key Takeaways** (3–5 standalone bullets, one per line, each must make sense out of context), Body, Cover Image (`{slug}-cover.png`, 1200×630 — `webflow-publish` auto-thumbnails to 1024×536 on upload), Category, Author (Reference), Published Date, Last Reviewed Date, Read Time, SEO Title (≤60 chars), SEO Description (≤155 chars), Canonical URL.
 
 The skill MUST emit Excerpt, TLDR, and Key Takeaways as separate rows in the publish-kit.md CMS field mapping table. They are three distinct fields, not one — see `webflow.md` §1A for writing rules and the Excerpt-vs-TLDR-vs-Takeaways distinction.
 
